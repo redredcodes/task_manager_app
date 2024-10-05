@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:task_manager_app/ui/screens/splash_screen.dart';
 
 class TaskManagerApp extends StatelessWidget {
+  const TaskManagerApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(
-        useMaterial3: true,
         primarySwatch: Colors.green,
         primaryColor: Colors.green,
         textTheme: const TextTheme(),
@@ -23,9 +24,6 @@ class TaskManagerApp extends StatelessWidget {
             ),
             filled: true,
             fillColor: Colors.white),
-        appBarTheme: AppBarTheme(
-
-        ),
       ),
     );
   }

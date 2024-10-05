@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
@@ -23,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   // the future function
   Future<void> _moveToNextScreen() async {
     await Future.delayed(const Duration(seconds: 2));
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> SignInScreen()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const SignInScreen()));
   }
 
   @override
