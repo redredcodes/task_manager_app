@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/task_card.dart';
 import '../../widgets/task_summary_card.dart';
 import 'add_new_task_screen.dart';
 
@@ -14,12 +15,54 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      body: Container(
-        height: 400,
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          //mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            buildSummarySection(),
+            //const SizedBox(height: 100,),
+
+            // the top scrollable row that has vanished
+            //buildSummarySection(),
+            Row(
+              children: [
+                Expanded(
+                  child: TaskSummaryCard(
+                    taskStatus: 'New',
+                    taskCount: 09,
+                  ),
+                ),
+                Expanded(
+                  child: TaskSummaryCard(
+                    taskStatus: 'Completed',
+                    taskCount: 09,
+                  ),
+                ),
+                Expanded(
+                  child: TaskSummaryCard(
+                    taskStatus: 'In Progress',
+                    taskCount: 09,
+                  ),
+                ),
+                Expanded(
+                  child: TaskSummaryCard(
+                    taskStatus: 'Cancelled',
+                    taskCount: 09,
+                  ),
+                ),
+              ],
+            ),
+            // all tasks list
+            Expanded( flex: 3,
+              child: ListView.separated(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return  const TaskCard();
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return const SizedBox(height: 8);
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -63,3 +106,4 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         MaterialPageRoute(builder: (context) => const AddNewTaskScreen()));
   }
 }
+

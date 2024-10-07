@@ -8,7 +8,7 @@ class GreenBall extends StatelessWidget {
     return Container(
       width: 350,
       height: 350,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.green,
         shape: BoxShape.circle,
       ),

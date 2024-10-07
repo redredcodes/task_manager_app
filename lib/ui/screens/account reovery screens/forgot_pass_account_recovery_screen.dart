@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager_app/ui/screens/account%20reovery%20screens/forgot_pass_otp_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
-import 'package:task_manager_app/ui/screens/sign_up_screen.dart';
 import 'package:task_manager_app/ui/widgets/custom_text_form_field.dart';
 import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
 import 'package:task_manager_app/ui/widgets/green_ball.dart';
