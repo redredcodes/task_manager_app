@@ -14,6 +14,7 @@ class TaskSummaryCard extends StatelessWidget {
     return Card(
       child: SizedBox(
         width: 100,
+        height: 100,
         child: Padding(
           padding: const EdgeInsets.all(5),
           child: Column(

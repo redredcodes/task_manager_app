@@ -15,12 +15,12 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Column(
           //mainAxisAlignment: MainAxisAlignment.start,
           children: [
             //const SizedBox(height: 100,),
-
+        
             // the top scrollable row that has vanished
             //buildSummarySection(),
             Row(

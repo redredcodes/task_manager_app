@@ -10,12 +10,14 @@ class CompletedTaskScreen extends StatefulWidget {
 class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Center(
-          child: Text('Completed Task'),
-        ),
-      ],
+    return SafeArea(
+      child: Column(
+        children: [
+          Center(
+            child: Text('Completed Task'),
+          ),
+        ],
+      ),
     );
   }
 }
