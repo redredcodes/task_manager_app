@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_up_screen.dart';
 import 'package:task_manager_app/ui/widgets/custom_text_form_field.dart';
 import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
@@ -30,54 +31,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: ScreenBackground(
-          child: Stack(
-        children: [
-          // the bg green ball
-          const Center(
-            child: GreenBall(),
-          ),
+        child: Stack(
+          children: [
+            // the bg green ball
+            const Center(
+              child: GreenBall(),
+            ),
 
-          // the glass card
-          FrostedGlass(
-            width: 300,
-            height: 520,
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 0),
+            // the glass card
+            FrostedGlass(
+              width: 300,
+              height: 520,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 0),
 
-                  // Welcome msg
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 7, horizontal: 20),
-                    child: Text(
-                      'Join \nWith Us.',
-                      style: textTheme.displaySmall
-                          ?.copyWith(fontWeight: FontWeight.w500),
+                    // Welcome msg
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 7, horizontal: 20),
+                      child: Text(
+                        'Join \nWith Us.',
+                        style: textTheme.displaySmall
+                            ?.copyWith(fontWeight: FontWeight.w500),
+                      ),
                     ),
-                  ),
 
-                  // email & pass form field
-                  buildSignUpForm(),
-                  const SizedBox(height: 15),
+                    // email & pass form field
+                    buildSignUpForm(),
+                    const SizedBox(height: 15),
 
-                  // the next button
-                  buildNextButton(),
+                    // the next button
+                    buildNextButton(),
 
-                  const SizedBox(height: 5),
+                    const SizedBox(height: 5),
 
-                  buildScrollDownButton(),
+                    buildScrollDownButton(),
 
-                  // password recovery + Signing Up Buttons
-                  buildPassRecoverSignUp()
-                ],
+                    // password recovery + Signing Up Buttons
+                    buildPassRecoverSignUp()
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      )),
+          ],
+        ),
+      ),
     );
   }
 
@@ -132,13 +134,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Padding buildNextButton() {
+  // the next button
+  Widget buildNextButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: _onTapNextButton,
           style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green[500],
               foregroundColor: Colors.white,
@@ -150,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Column buildPassRecoverSignUp() {
+  Widget buildPassRecoverSignUp() {
     return Column(
       children: [
         Row(
@@ -192,8 +195,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // button functionalities
   void _onTapNextButton() {
-    // TODO: implement on tap next button function in sign up page
-    //Navigator.push(context, MaterialPageRoute(builder: (context)=> SignUpScreen(),),);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInScreen(),
+      ),
+    );
   }
 
   void _onTapSignInButton() {

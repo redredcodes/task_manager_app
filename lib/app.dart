@@ -10,6 +10,12 @@ class TaskManagerApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          iconTheme: IconThemeData(
+            color: Colors.white
+          )
+        ),
+        scaffoldBackgroundColor: Colors.grey[200],
         primarySwatch: Colors.green,
         primaryColor: Colors.green,
         textTheme: const TextTheme(),

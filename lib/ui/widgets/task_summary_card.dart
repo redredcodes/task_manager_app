@@ -12,12 +12,13 @@ class TaskSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
+      elevation: 0,
       child: SizedBox(
         width: 100,
-        height: 100,
         child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
+          padding: const EdgeInsets.all(8),
+          child: Column( crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 '$taskCount',
@@ -29,7 +30,7 @@ class TaskSummaryCard extends StatelessWidget {
               Text(
                 taskStatus,
                 style: const TextStyle(
-                    fontSize: 10,
+                    fontSize: 12,
                     color: Colors.grey,
                     fontWeight: FontWeight.w600),
               ),

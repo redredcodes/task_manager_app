@@ -17,42 +17,18 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: Column(
-          //mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            //const SizedBox(height: 100,),
-        
-            // the top scrollable row that has vanished
-            //buildSummarySection(),
-            Row(
-              children: [
-                Expanded(
-                  child: TaskSummaryCard(
-                    taskStatus: 'New',
-                    taskCount: 09,
-                  ),
-                ),
-                Expanded(
-                  child: TaskSummaryCard(
-                    taskStatus: 'Completed',
-                    taskCount: 09,
-                  ),
-                ),
-                Expanded(
-                  child: TaskSummaryCard(
-                    taskStatus: 'In Progress',
-                    taskCount: 09,
-                  ),
-                ),
-                Expanded(
-                  child: TaskSummaryCard(
-                    taskStatus: 'Cancelled',
-                    taskCount: 09,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 8,),
+            // the top scrollable row which shows total task statuses
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: buildSummarySection(),
             ),
+
+            const SizedBox(height: 8,),
+
             // all tasks list
-            Expanded( flex: 3,
+            Expanded(
               child: ListView.separated(
                 itemCount: 10,
                 itemBuilder: (context, index) {
@@ -75,7 +51,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-  SingleChildScrollView buildSummarySection() {
+  Widget buildSummarySection() {
     return const SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(

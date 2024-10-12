@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/cancelled_task_scree.dart';
-import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/completed_task_scree.dart';
-import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/new_task_scree.dart';
-import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/progress_task_scree.dart';
+import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/cancelled_task_screen.dart';
+import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/completed_task_screen.dart';
+import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/new_task_screen.dart';
+import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/progress_task_screen.dart';
 import '../../widgets/tm_appbar.dart';
 
 class LadingPage extends StatefulWidget {
