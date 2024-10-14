@@ -168,25 +168,26 @@ class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 2),
-          backgroundColor: Colors.green,
-          content: FrostedGlass(
-            width: double.infinity,
-            height: 40,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/images/correct.png',
-                  height: 15,
-                  width: 15,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                const Text('Password reset successful!'),
-              ],
-            ),
-          )),
+        backgroundColor: Colors.green,
+        content: FrostedGlass(
+          width: double.infinity,
+          height: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/correct.png',
+                height: 15,
+                width: 15,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              const Text('Password reset successful!'),
+            ],
+          ),
+        ),
+      ),
     );
     Future.delayed(const Duration(seconds: 1), () {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const SignInScreen()));
