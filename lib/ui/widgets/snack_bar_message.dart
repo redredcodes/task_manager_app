@@ -6,7 +6,7 @@ void showSnackBarMessage(BuildContext context, String message, [bool isError = f
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       duration: const Duration(seconds: 2),
-      backgroundColor: isError ? Colors.redAccent : Colors.green,
+      backgroundColor: isError ? Colors.red : Colors.green,
       content: FrostedGlass(
         width: double.infinity,
         height: 40,
