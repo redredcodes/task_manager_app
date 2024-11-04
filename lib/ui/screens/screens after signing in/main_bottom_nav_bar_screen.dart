@@ -5,14 +5,14 @@ import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/new_t
 import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/progress_task_screen.dart';
 import '../../widgets/tm_appbar.dart';
 
-class LadingPage extends StatefulWidget {
-  const LadingPage({super.key});
+class MainBottomNavBarScreen extends StatefulWidget {
+  const MainBottomNavBarScreen({super.key});
 
   @override
-  State<LadingPage> createState() => _LadingPageState();
+  State<MainBottomNavBarScreen> createState() => _MainBottomNavBarScreenState();
 }
 
-class _LadingPageState extends State<LadingPage> {
+class _MainBottomNavBarScreenState extends State<MainBottomNavBarScreen> {
   int _selectedIndex = 0;
 
   void _navigateBottomBar(int index) {

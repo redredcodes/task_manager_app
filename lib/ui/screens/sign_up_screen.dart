@@ -7,7 +7,6 @@ import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
 import 'package:task_manager_app/ui/widgets/green_ball.dart';
 import 'package:task_manager_app/ui/widgets/screen_background.dart';
 import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
-
 import '../../data/utils/urls.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -264,6 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  // registration post request
   Future<void> _signUp() async {
     setState(() {
       _inProgress = true;
@@ -285,10 +285,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _inProgress = false;
     });
     if (response.isSuccess) {
-      showSnackBarMessage(context, 'Registration successful, you\'re in!',);
+      _clearTextFields();
+      Navigator.pop(context);
+      showSnackBarMessage(context, 'Registration successful, Sign in please!',);
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }
+  }
+
+  // this function will clear the form once the post request is successful. We are making it separately here so the post request function remains short. We should try to make a function less than 20 lines, not more than that.
+  void _clearTextFields() {
+    _emailTEController.clear();
+    _firstNameTEController.clear();
+    _lastNameTEController.clear();
+    _mobileTEController.clear();
+    _passwordTEController.clear();
   }
 
   // sign in button function

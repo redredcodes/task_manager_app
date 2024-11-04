@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app/ui/controllers/auth_controller.dart';
 import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/profile_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 
@@ -26,24 +27,29 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
 
            Expanded(
             child: GestureDetector(
-              onTap: (){
-                if (isProfileScreenOpen){
+              onTap: () {
+                if (isProfileScreenOpen) {
                   return;
                 }
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> const ProfileScreen(),),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
               },
-              child: const Column(
+              child:  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Ice Bear',
-                    style: TextStyle(
+                    AuthController.userData?.fullName ?? '',
+                    style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                         color: Colors.white),
                   ),
-                  Text('icebear@gmail.com',
-                      style: TextStyle(
+                  Text(AuthController.userData?.email ?? '',
+                      style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
                           color: Colors.white))
@@ -52,17 +58,18 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           IconButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SignInScreen()),
-                    (predicate) => false);
-              },
-              icon: Icon(
-                Icons.logout,
-                color: Colors.grey[800],
-              ))
+            onPressed: () async {
+              await AuthController.clearUserData();
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignInScreen()),
+                  (predicate) => false);
+            },
+            icon: Icon(
+              Icons.logout,
+              color: Colors.grey[800],
+            ),
+          ),
         ],
       ),
     );

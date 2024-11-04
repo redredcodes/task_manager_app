@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class MyButton extends StatelessWidget {
   final Widget child;
-  final VoidCallback onPressed;
-  const MyButton({super.key, required this.child, required this.onPressed});
+  final VoidCallback? onPressed;
+  const MyButton({super.key, required this.child, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +15,11 @@ class MyButton extends StatelessWidget {
           minimumSize: const Size(double.infinity, 60),
             backgroundColor: Colors.green[500],
             foregroundColor: Colors.white,
+            surfaceTintColor: Colors.green,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5))),
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
         child: child,
       ),
     );
