@@ -21,7 +21,7 @@ class TaskListModel {
       // Loop over each item in the 'data' array from JSON.
       json['data'].forEach((v) {
         // For each item (v), create a TaskModel from JSON and add it to taskList.
-        taskList!.add(new TaskModel.fromJson(v));
+        taskList!.add(TaskModel.fromJson(v));
       });
     }
   }

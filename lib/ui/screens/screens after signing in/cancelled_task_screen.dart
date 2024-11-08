@@ -34,30 +34,37 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
         _getCancelledTaskList();
       },
       child: SafeArea(
-        child: Visibility(
-          visible: !_getCancelledTaskInProgress,
-          replacement: const CenteredCircularProgressIndicator(),
-          child: _cancelledTaskList.isEmpty ?
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(AssetsPath.emptyTask2, width: 150,),
-              const Center(
-                child: Text('No tasks to show!', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+        child: Column(
+          children: [
+            const SizedBox(height: 8,),
+            Expanded(
+              child: Visibility(
+                visible: !_getCancelledTaskInProgress,
+                replacement: const CenteredCircularProgressIndicator(),
+                child: _cancelledTaskList.isEmpty ?
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(AssetsPath.emptyTask2, width: 150,),
+                    const Center(
+                      child: Text('No tasks to show!', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+                    ),
+                  ],
+                )
+                    : ListView.separated(
+                  itemCount: _cancelledTaskList.length,
+                  itemBuilder: (context, index) {
+                    return TaskCard(
+                        taskModel: _cancelledTaskList[index],
+                        onRefreshList: _getCancelledTaskList);
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(height: 8);
+                  },
+                ),
               ),
-            ],
-          )
-              : ListView.separated(
-            itemCount: _cancelledTaskList.length,
-            itemBuilder: (context, index) {
-              return TaskCard(
-                  taskModel: _cancelledTaskList[index],
-                  onRefreshList: _getCancelledTaskList);
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(height: 8);
-            },
-          ),
+            ),
+          ],
         ),
       ),
     );

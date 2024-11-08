@@ -135,9 +135,40 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     return taskSummaryCardList;
   }
 
+  // Future<void> onTapFAB() async {
+  //   final bool? shouldRefresh = await Navigator.push(
+  //       context, MaterialPageRoute(builder: (context) => const AddNewTaskScreen()));
+  //   if (shouldRefresh == true) {
+  //     _getNewTaskList();
+  //   }
+  // }
+
   Future<void> onTapFAB() async {
-    final bool? shouldRefresh = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AddNewTaskScreen()));
+    final bool? shouldRefresh = await showModalBottomSheet(
+      isScrollControlled: false,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(10))
+        ),
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 8,
+              right: 8,
+              top: 8,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height, // * 0.99,
+                ),
+                child: const AddNewTaskScreen(),
+              ),
+            ),
+          );
+        },
+    );
     if (shouldRefresh == true) {
       _getNewTaskList();
     }

@@ -8,10 +8,17 @@ class Urls {
   static const String cancelledTaskList = '$_baseUrl/listTaskByStatus/Cancelled';
   static const String progressTaskList = '$_baseUrl/listTaskByStatus/Progress';
   static const String taskStatusCountList = '$_baseUrl/taskStatusCount';
+  static const String updateProfile = '$_baseUrl/ProfileUpdate';
 
   static String updateTaskStatus(String taskId, String status) =>
       '$_baseUrl/updateTaskStatus/$taskId/$status';
 
   static String deleteTask(String taskId) =>
       '$_baseUrl/deleteTask/$taskId';
+
+  static String recoverVerifyEmail(String email) =>
+      '$_baseUrl/RecoverVerifyEmail/$email';
+
+  static String recoverVerifyOtp(String otp) =>
+      '$_baseUrl/RecoverVerifyOtp/$otp';
 }

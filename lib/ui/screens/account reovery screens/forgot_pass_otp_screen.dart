@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_manager_app/data/models/network_response.dart';
+import 'package:task_manager_app/data/services/network_caller.dart';
+import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/ui/screens/account%20reovery%20screens/set_new_pass_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
-import 'package:task_manager_app/ui/screens/sign_up_screen.dart';
-import 'package:task_manager_app/ui/widgets/custom_text_form_field.dart';
+import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
 import 'package:task_manager_app/ui/widgets/green_ball.dart';
 import 'package:task_manager_app/ui/widgets/screen_background.dart';
+import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
 
 class ForgotPassOtpScreen extends StatefulWidget {
   const ForgotPassOtpScreen({super.key});
@@ -16,6 +19,9 @@ class ForgotPassOtpScreen extends StatefulWidget {
 }
 
 class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
+  bool _verifyButtonInProgressIndicator = false;
+  final TextEditingController _pinCodeTEController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -54,15 +60,15 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
                     padding: const EdgeInsets.all(20),
                     child: Text(
                       'A 6 digits verification code has been sent to your email address',
-                      style: textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w400, color: Colors.grey[800]),
+                      style: textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w400, color: Colors.grey[800]),
                     ),
                   ),
-
 
                   // email & pass form field
                   Center(
                     child: PinCodeTextField(
+                      controller: _pinCodeTEController,
                       length: 6,
                       obscureText: false,
                       animationType: AnimationType.fade,
@@ -77,7 +83,6 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
                         selectedFillColor: Colors.white,
                         selectedColor: Colors.green,
                         inactiveColor: Colors.white,
-
                       ),
                       animationDuration: const Duration(milliseconds: 300),
                       backgroundColor: Colors.transparent,
@@ -104,11 +109,6 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
     );
   }
 
-
-
-
-
-
 // all builds down here 👇
 
   Padding buildVerifyButton() {
@@ -116,18 +116,22 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _onTapVerifyButton,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[500],
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
+        child: Visibility(
+          visible: !_verifyButtonInProgressIndicator,
+          replacement: const CenteredCircularProgressIndicator(),
+          child: ElevatedButton(
+            onPressed: _onTapVerifyButton,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[500],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
             ),
-          ),
-          child: const Text(
-            'Verify',
-            style: TextStyle(letterSpacing: 1),
+            child: const Text(
+              'Verify',
+              style: TextStyle(letterSpacing: 1),
+            ),
           ),
         ),
       ),
@@ -145,8 +149,7 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
               onPressed: _onTapSignIn,
               child: Text(
                 'Sign In',
-                style: TextStyle(
-                    color: Colors.green[500], fontSize: 13),
+                style: TextStyle(color: Colors.green[500], fontSize: 13),
               ),
             ),
           ],
@@ -156,17 +159,38 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
   }
 
   // button functionalities 👇
-  void _onTapVerifyButton () {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> const SetNewPassScreen()));
+  Future<void> _onTapVerifyButton() async {
+    setState(() {
+      _verifyButtonInProgressIndicator = true;
+    });
+
+    final NetworkResponse response = await NetworkCaller.getRequest(
+      url: Urls.recoverVerifyOtp(_pinCodeTEController.text),
+    );
+    setState(() {
+      _verifyButtonInProgressIndicator = false;
+    });
+
+    if (response.isSuccess) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SetNewPassScreen(),
+        ),
+      );
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
   }
 
-  void _onTapSignIn () {
+  void _onTapSignIn() {
     // this will remove all the previous screens until the one we choose and take us there
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const SignInScreen()), (_)=> false);
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInScreen(),
+      ),
+      (_) => false,
+    );
   }
-  
-
-
-
-
- }
+}

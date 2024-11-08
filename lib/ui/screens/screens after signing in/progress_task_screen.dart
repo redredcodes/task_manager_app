@@ -33,30 +33,37 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
         _getProgressTaskList();
       },
       child: SafeArea(
-        child: Visibility(
-          visible: !_getProgressTaskInProgress,
-          replacement: const CenteredCircularProgressIndicator(),
-          child: _progressTaskList.isEmpty ?
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(AssetsPath.emptyTask2, width: 150,),
-              const Center(
-                child: Text('No tasks to show!', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+        child: Column(
+          children: [
+            const SizedBox(height: 8,),
+            Expanded(
+              child: Visibility(
+                visible: !_getProgressTaskInProgress,
+                replacement: const CenteredCircularProgressIndicator(),
+                child: _progressTaskList.isEmpty ?
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(AssetsPath.emptyTask2, width: 150,),
+                    const Center(
+                      child: Text('No tasks to show!', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+                    ),
+                  ],
+                )
+                    : ListView.separated(
+                  itemCount: _progressTaskList.length,
+                  itemBuilder: (context, index) {
+                    return TaskCard(
+                        taskModel: _progressTaskList[index],
+                        onRefreshList: _getProgressTaskList);
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(height: 8);
+                  },
+                ),
               ),
-            ],
-          )
-              : ListView.separated(
-            itemCount: _progressTaskList.length,
-            itemBuilder: (context, index) {
-              return TaskCard(
-                  taskModel: _progressTaskList[index],
-                  onRefreshList: _getProgressTaskList);
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(height: 8);
-            },
-          ),
+            ),
+          ],
         ),
       ),
     );

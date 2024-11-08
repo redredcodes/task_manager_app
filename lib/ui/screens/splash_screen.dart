@@ -25,7 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
     // checking if the user is logged in or not
     await AuthController.getAccessToken();
-    if (AuthController.isLoggedIn()){
+    if (AuthController.isLoggedIn()) {
+      await AuthController.getUserData();
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const MainBottomNavBarScreen()));
     } else {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const SignInScreen()));

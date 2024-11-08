@@ -34,15 +34,15 @@ class TaskModel {
   // This is useful when we need to send the TaskModel data back to an API in JSON format.
   Map<String, dynamic> toJson() {
     // We create an empty Map to hold our data in key-value pairs.
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
 
     // We add our class fields to the Map using the correct JSON keys.
-    data['_id'] = this.sId;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['status'] = this.status;
-    data['email'] = this.email;
-    data['createdDate'] = this.createdDate;
+    data['_id'] = sId;
+    data['title'] = title;
+    data['description'] = description;
+    data['status'] = status;
+    data['email'] = email;
+    data['createdDate'] = createdDate;
 
     // Finally, we return the Map (which is now in JSON format).
     return data;

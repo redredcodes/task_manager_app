@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app/data/models/network_response.dart';
+import 'package:task_manager_app/data/services/network_caller.dart';
+import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/ui/screens/account%20reovery%20screens/forgot_pass_otp_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
+import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/custom_text_form_field.dart';
 import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
 import 'package:task_manager_app/ui/widgets/green_ball.dart';
 import 'package:task_manager_app/ui/widgets/screen_background.dart';
+import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
 
 class AccountRecoveryScreen extends StatefulWidget {
   const AccountRecoveryScreen({super.key});
@@ -14,6 +19,9 @@ class AccountRecoveryScreen extends StatefulWidget {
 }
 
 class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
+  bool _nextButtonInProgress = false;
+  final TextEditingController _emailTEController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -90,7 +98,7 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
                   children: [
                     CustomTextFormField(
                       keyboardType: TextInputType.emailAddress,
-                      controller: TextEditingController(),
+                      controller: _emailTEController,
                       obscureText: false, hintText: 'Email',
                     ),
                     const SizedBox(height: 10),
@@ -102,14 +110,18 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _onTapNextButton,
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[500],
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5))),
-          child: const Icon(Icons.navigate_next_rounded),
+        child: Visibility(
+          visible: !_nextButtonInProgress,
+          replacement: const CenteredCircularProgressIndicator(),
+          child: ElevatedButton(
+            onPressed: _onTapNextButton,
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[500],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5))),
+            child: const Icon(Icons.navigate_next_rounded),
+          ),
         ),
       ),
     );
@@ -137,11 +149,29 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
 
   // button functionalities
   void _onTapSignIn () {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> const SignInScreen(),),);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInScreen(),
+      ),
+    );
   }
   
-  void _onTapNextButton () {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> const ForgotPassOtpScreen()));
+  Future<void> _onTapNextButton () async{
+    _nextButtonInProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkCaller.getRequest(
+      url: Urls.recoverVerifyEmail(_emailTEController.text),
+    );
+
+    _nextButtonInProgress = false;
+    setState(() {});
+
+    if (response.isSuccess) {
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> const ForgotPassOtpScreen()));
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
   }
 
 

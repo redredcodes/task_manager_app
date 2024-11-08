@@ -158,7 +158,7 @@ class _SignInScreenState extends State<SignInScreen> {
             TextButton(
               onPressed: _onTapPassWentBlackHole,
               child: Text(
-                'Password went to Black hole?',
+                'Forgot Password?',
                 style:
                 TextStyle(color: Colors.grey[700], fontSize: 13),
               ),

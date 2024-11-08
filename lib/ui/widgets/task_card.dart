@@ -67,7 +67,7 @@ class _TaskCardState extends State<TaskCard> {
                 OverflowBar(
                   children: [
                     IconButton(
-                      onPressed: _onTapEditButton,
+                      onPressed: _onTapTaskStatusChip,
                       icon: const Icon(Iconsax.edit),
                     ),
                     IconButton(
@@ -84,7 +84,7 @@ class _TaskCardState extends State<TaskCard> {
     );
   }
 
-  void _onTapEditButton() {
+  void _onTapTaskStatusChip() {
     showDialog(
         context: context,
         builder: (context) {
@@ -133,15 +133,46 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   Widget _buildTaskStatusChip() {
-    return Chip(
-      label: Text(
-        widget.taskModel.status!,
-        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+    return GestureDetector(
+      onTap: _onTapTaskStatusChip,
+      child: Chip(
+        label: Text(
+          widget.taskModel.status!,
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        side: BorderSide(color: _getBorderColor()!),
+        backgroundColor: _getBackgroundColor(),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      side: BorderSide(color: Colors.green.shade500),
-      backgroundColor: Colors.lightGreen.shade50,
     );
+  }
+
+  Color? _getBackgroundColor() {
+    if (widget.taskModel.status == 'New') {
+      return Colors.blue.shade50;
+    } else if (widget.taskModel.status == 'Completed') {
+      return Colors.green.shade50;
+    } else if (widget.taskModel.status == 'Cancelled') {
+      return Colors.red.shade50;
+    } else if (widget.taskModel.status == 'Progress') {
+      return Colors.yellow.shade50;
+    } else {
+      return null;
+    }
+  }
+
+  Color? _getBorderColor() {
+    if (widget.taskModel.status == 'New') {
+      return Colors.blue.shade500;
+    } else if (widget.taskModel.status == 'Completed') {
+      return Colors.green.shade500;
+    } else if (widget.taskModel.status == 'Cancelled') {
+      return Colors.red.shade500;
+    } else if (widget.taskModel.status == 'Progress') {
+      return Colors.yellow.shade500;
+    } else {
+      return null;
+    }
   }
 
   Future<void> _changeStatus(String newStatus) async {
