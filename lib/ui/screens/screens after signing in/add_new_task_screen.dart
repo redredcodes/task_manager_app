@@ -32,9 +32,9 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     FocusScope.of(context).requestFocus(_textFieldFocusNode);
   }
 
-  void _autoHideKeyboard() {
-    FocusScope.of(context).unfocus();
-  }
+  // void _autoHideKeyboard() {
+  //   FocusScope.of(context).unfocus();
+  // }
 
   @override
   void initState() {
@@ -203,7 +203,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       _addNewTaskInProgress = false;
     });
     if (response.isSuccess) {
-      _autoHideKeyboard();
+      //_autoHideKeyboard();
       _clearTextFields();
       _shouldRefreshPreviousPage = true;
       showSnackBarMessage(context, 'New Task Added');

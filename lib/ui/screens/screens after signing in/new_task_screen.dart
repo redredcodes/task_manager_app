@@ -171,6 +171,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
     if (shouldRefresh == true) {
       _getNewTaskList();
+      _getNewTaskStatusCount();
     }
   }
 
