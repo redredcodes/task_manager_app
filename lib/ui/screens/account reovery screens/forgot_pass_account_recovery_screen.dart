@@ -160,15 +160,23 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
   Future<void> _onTapNextButton () async{
     _nextButtonInProgress = true;
     setState(() {});
+
     final NetworkResponse response = await NetworkCaller.getRequest(
-      url: Urls.recoverVerifyEmail(_emailTEController.text),
+      url: Urls.recoverVerifyEmail(_emailTEController.text.trim()),
     );
 
     _nextButtonInProgress = false;
     setState(() {});
 
     if (response.isSuccess) {
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> const ForgotPassOtpScreen()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ForgotPassOtpScreen(
+            verifyEmail: _emailTEController.text.trim(),
+          ),
+        ),
+      );
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }

@@ -12,7 +12,9 @@ import 'package:task_manager_app/ui/widgets/screen_background.dart';
 import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
 
 class ForgotPassOtpScreen extends StatefulWidget {
-  const ForgotPassOtpScreen({super.key});
+  const ForgotPassOtpScreen({super.key, required this.verifyEmail});
+
+  final String verifyEmail;
 
   @override
   State<ForgotPassOtpScreen> createState() => _ForgotPassOtpScreenState();
@@ -165,7 +167,7 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
     });
 
     final NetworkResponse response = await NetworkCaller.getRequest(
-      url: Urls.recoverVerifyOtp(_pinCodeTEController.text),
+      url: Urls.recoverVerifyOtp(widget.verifyEmail, _pinCodeTEController.text),
     );
     setState(() {
       _verifyButtonInProgressIndicator = false;
@@ -175,13 +177,36 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const SetNewPassScreen(),
+          builder: (context) => SetNewPassScreen(
+            email: widget.verifyEmail,
+            otp: _pinCodeTEController.text,
+          ),
         ),
       );
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }
   }
+
+  // Future<void> _onTapVerifyButton() async {
+  //   setState(() {
+  //     _verifyButtonInProgressIndicator = true;
+  //   });
+  //
+  //   final NetworkResponse response = await NetworkCaller.getRequest(
+  //     url: Urls.recoverVerifyOtp(_pinCodeTEController.text),
+  //   );
+  //   setState(() {
+  //     _verifyButtonInProgressIndicator = false;
+  //   });
+  //
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => const SetNewPassScreen(),
+  //       ),
+  //     );
+  // }
 
   void _onTapSignIn() {
     // this will remove all the previous screens until the one we choose and take us there

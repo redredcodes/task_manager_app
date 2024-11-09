@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app/data/models/network_response.dart';
+import 'package:task_manager_app/data/services/network_caller.dart';
+import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/widgets/custom_text_form_field.dart';
 import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
 import 'package:task_manager_app/ui/widgets/green_ball.dart';
 import 'package:task_manager_app/ui/widgets/screen_background.dart';
+import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
 
 class SetNewPassScreen extends StatefulWidget {
-  const SetNewPassScreen({super.key});
+  const SetNewPassScreen({super.key, required this.email, required this.otp});
+
+  final String email;
+  final String otp;
 
   @override
   State<SetNewPassScreen> createState() => _AccountRecoveryScreenState();
 }
 
 class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
+
+  
+  bool _confirmButtonInProgressIndicator = false;
+  final TextEditingController _setPasswordTEController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -102,7 +114,7 @@ class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
         const SizedBox(height: 10),
         // pass form field
         CustomTextFormField(
-          controller: TextEditingController(),
+          controller: _setPasswordTEController,
           obscureText: true, hintText: 'Confirm Password',
         ),
       ],
@@ -162,33 +174,65 @@ class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
     );
   }
 
-  void _onTapConfirmButton() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 2),
-        backgroundColor: Colors.green,
-        content: FrostedGlass(
-          width: double.infinity,
-          height: 40,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/correct.png',
-                height: 15,
-                width: 15,
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              const Text('Password reset successful!'),
-            ],
-          ),
-        ),
-      ),
+  // void _onTapConfirmButton() {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       duration: const Duration(seconds: 2),
+  //       backgroundColor: Colors.green,
+  //       content: FrostedGlass(
+  //         width: double.infinity,
+  //         height: 40,
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Image.asset(
+  //               'assets/images/correct.png',
+  //               height: 15,
+  //               width: 15,
+  //             ),
+  //             const SizedBox(
+  //               width: 5,
+  //             ),
+  //             const Text('Password reset successful!'),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  //   Future.delayed(const Duration(seconds: 1), () {
+  //     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const SignInScreen()));
+  //   });
+  // }
+  Future <void> _onTapConfirmButton() async {
+      _confirmButtonInProgressIndicator = true;
+      setState(() {});
+    Map<String, dynamic> requestBody = {
+       "email": widget.email,
+       "OTP": widget.otp,
+      "password": _setPasswordTEController.text
+    };
+    final NetworkResponse response = await NetworkCaller.postRequest(
+      url: Urls.recoverResetPassword,
+      body: requestBody,
     );
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const SignInScreen()));
-    });
+    _confirmButtonInProgressIndicator = false;
+      setState(() {});
+    if (response.isSuccess) {
+      showSnackBarMessage(context, response.responseData['data']);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SignInScreen(),
+        ),
+      );
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _setPasswordTEController.dispose();
+    super.dispose();
   }
 }
