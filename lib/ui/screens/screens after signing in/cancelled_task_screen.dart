@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager_app/data/models/network_response.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:task_manager_app/data/models/task_list_model.dart';
 import 'package:task_manager_app/data/models/task_model.dart';
-import 'package:task_manager_app/data/services/network_caller.dart';
+import 'package:task_manager_app/ui/controllers/cancelled_task_list_controller.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
-import '../../../data/utils/urls.dart';
 import '../../utils/assets_path.dart';
 import '../../widgets/task_card.dart';
 
@@ -23,8 +23,9 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
     _getCancelledTaskList();
   }
 
-  bool _getCancelledTaskInProgress = false;
-  List<TaskModel> _cancelledTaskList = [];
+  // bool _getCancelledTaskInProgress = false;
+  // List<TaskModel> _cancelledTaskList = [];
+  final CancelledTaskListController _cancelledTaskListController = Get.find<CancelledTaskListController>();
   
   @override
   Widget build(BuildContext context) {
@@ -38,30 +39,34 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
           children: [
             const SizedBox(height: 8,),
             Expanded(
-              child: Visibility(
-                visible: !_getCancelledTaskInProgress,
-                replacement: const CenteredCircularProgressIndicator(),
-                child: _cancelledTaskList.isEmpty ?
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(AssetsPath.emptyTask2, width: 150,),
-                    const Center(
-                      child: Text('No tasks to show!', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+              child: GetBuilder<CancelledTaskListController>(
+                builder: (controller) {
+                  return Visibility(
+                    visible: !controller.inProgress,
+                    replacement: const CenteredCircularProgressIndicator(),
+                    child: controller.taskList.isEmpty ?
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(AssetsPath.emptyTask2, width: 150,),
+                        const Center(
+                          child: Text('No tasks to show!', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+                        ),
+                      ],
+                    )
+                        : ListView.separated(
+                      itemCount: controller.taskList.length,
+                      itemBuilder: (context, index) {
+                        return TaskCard(
+                            taskModel: controller.taskList[index],
+                            onRefreshList: _getCancelledTaskList);
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const SizedBox(height: 8);
+                      },
                     ),
-                  ],
-                )
-                    : ListView.separated(
-                  itemCount: _cancelledTaskList.length,
-                  itemBuilder: (context, index) {
-                    return TaskCard(
-                        taskModel: _cancelledTaskList[index],
-                        onRefreshList: _getCancelledTaskList);
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const SizedBox(height: 8);
-                  },
-                ),
+                  );
+                }
               ),
             ),
           ],
@@ -71,18 +76,9 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
   }
 
   Future<void> _getCancelledTaskList() async {
-    _cancelledTaskList.clear();
-    _getCancelledTaskInProgress = true;
-    setState(() {});
-
-    final NetworkResponse response = await NetworkCaller.getRequest(url: Urls.cancelledTaskList);
-    if (response.isSuccess) {
-      final TaskListModel taskListModel = TaskListModel.fromJson(response.responseData);
-      _cancelledTaskList = taskListModel.taskList ?? [];
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+    final bool result = await _cancelledTaskListController.getCancelledTaskList();
+    if (result == false) {
+      showSnackBarMessage(context, _cancelledTaskListController.errorMessage!, true);
     }
-    _getCancelledTaskInProgress = false;
-    setState(() {});
   }
 }

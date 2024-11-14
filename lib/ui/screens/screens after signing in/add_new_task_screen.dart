@@ -217,3 +217,5 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     _addNewTaskTEController.clear();
   }
 }
+
+

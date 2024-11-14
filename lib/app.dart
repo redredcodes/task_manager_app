@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:task_manager_app/controller_binder.dart';
+import 'package:task_manager_app/ui/screens/screens%20after%20signing%20in/main_bottom_nav_bar_screen.dart';
 import 'package:task_manager_app/ui/screens/splash_screen.dart';
 
 class TaskManagerApp extends StatelessWidget {
@@ -8,10 +11,15 @@ class TaskManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       navigatorKey: TaskManagerApp.navigatorKey,
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      initialRoute: SplashScreen.name,
+      routes: {
+        SplashScreen.name : (context) => const SplashScreen(),
+        MainBottomNavBarScreen.name : (context) => const MainBottomNavBarScreen(),
+      },
+      initialBinding: ControllerBinder(),
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           iconTheme: IconThemeData(

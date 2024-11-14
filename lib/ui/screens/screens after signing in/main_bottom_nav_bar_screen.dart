@@ -8,6 +8,8 @@ import '../../widgets/tm_appbar.dart';
 class MainBottomNavBarScreen extends StatefulWidget {
   const MainBottomNavBarScreen({super.key});
 
+  static const name = '/home';
+
   @override
   State<MainBottomNavBarScreen> createState() => _MainBottomNavBarScreenState();
 }

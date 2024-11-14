@@ -12,6 +12,8 @@ import '../../data/utils/urls.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
+  static const name = '/sign up screen';
+
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }

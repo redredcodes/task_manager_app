@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager_app/data/models/network_response.dart';
-import 'package:task_manager_app/data/models/task_model.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
 import 'package:task_manager_app/data/utils/urls.dart';
+import 'package:task_manager_app/ui/controllers/new_task_list_controller.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
 import 'package:task_manager_app/ui/widgets/task_status_count_model.dart';
 import 'package:task_manager_app/ui/widgets/task_status_model.dart';
-import '../../../data/models/task_list_model.dart';
 import '../../utils/assets_path.dart';
 import '../../widgets/task_card.dart';
 import '../../widgets/task_summary_card.dart';
@@ -16,30 +16,36 @@ import 'add_new_task_screen.dart';
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
 
+  static const name = '/new task screen';
+
   @override
   State<NewTaskScreen> createState() => _NewTaskScreenState();
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-  //final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _getNewTaskList();
-    _getNewTaskStatusCount();
+    _getTaskStatusCount();
   }
 
-  // void _scrollToBottom() {
-  //   if (_scrollController.hasClients) {
-  //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-  //   }
-  // }
+  void _scrollToBottom() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
-  bool _getNewTasksListInProgress = false;
-  bool _getTasksStatusCountListInProgress = false;
-  List<TaskModel> _newTaskList = [];
+  // bool _getNewTasksListInProgress = false;
+  // bool _getTasksStatusCountListInProgress = false;
+  // List<TaskModel> _newTaskList = [];
   List<TaskStatusModel> _taskStatusCountList = [];
+  final NewTaskListController _newTaskListController =
+      Get.find<NewTaskListController>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +55,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         color: Colors.green,
         onRefresh: () async {
           _getNewTaskList();
-          _getNewTaskStatusCount();
+          _getTaskStatusCount();
         },
         child: SafeArea(
           child: Column(
@@ -69,40 +75,45 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
               // all tasks list
               Expanded(
-                child: Visibility(
-                  visible: !_getNewTasksListInProgress,
-                  replacement: const CenteredCircularProgressIndicator(),
-                  child: _newTaskList.isEmpty
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              AssetsPath.emptyTask2,
-                              width: 150,
-                            ),
-                            const Center(
-                              child: Text(
-                                'No tasks to show!',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500, fontSize: 20),
+                child: GetBuilder<NewTaskListController>(builder: (controller) {
+                  return Visibility(
+                    visible: !controller.inProgress,
+                    // I have a question here => Can't we just use _newTaskListController.inProgress instead?
+                    replacement: const CenteredCircularProgressIndicator(),
+                    child: controller.taskList.isEmpty
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                AssetsPath.emptyTask2,
+                                width: 150,
                               ),
-                            ),
-                          ],
-                        )
-                      : ListView.separated(
-                          // reverse: true,
-                          // controller: _scrollController,
-                          itemCount: _newTaskList.length,
-                          itemBuilder: (context, index) {
-                            return TaskCard(
-                                taskModel: _newTaskList[index],
-                                onRefreshList: _getNewTaskList);
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return const SizedBox(height: 8);
-                          },
-                        ),
-                ),
+                              const Center(
+                                child: Text(
+                                  'No tasks to show!',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ],
+                          )
+                        : ListView.separated(
+                            // reverse: true,
+                            // controller: _scrollController,
+                            itemCount: controller.taskList.length,
+                            itemBuilder: (context, index) {
+                              return TaskCard(
+                                  taskModel: controller.taskList[index],
+                                  onRefreshList: _getNewTaskList);
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return const SizedBox(height: 8);
+                            },
+                          ),
+                  );
+                }),
               ),
             ],
           ),
@@ -129,8 +140,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   List<TaskSummaryCard> _getTaskSummaryCardList() {
     List<TaskSummaryCard> taskSummaryCardList = [];
     for (TaskStatusModel t in _taskStatusCountList) {
-      taskSummaryCardList
-          .add(TaskSummaryCard(taskStatus: t.sId!, taskCount: t.sum!));
+      taskSummaryCardList.add(
+        TaskSummaryCard(taskStatus: t.sId!, taskCount: t.sum!),
+      );
     }
     return taskSummaryCardList;
   }
@@ -143,60 +155,50 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   //   }
   // }
 
+  // add new task bottom sheet
   Future<void> onTapFAB() async {
     final bool? shouldRefresh = await showModalBottomSheet(
       isScrollControlled: false,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(10))
-        ),
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: EdgeInsets.only(
-              left: 8,
-              right: 8,
-              top: 8,
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height, // * 0.99,
-                ),
-                child: const AddNewTaskScreen(),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 8,
+            right: 8,
+            top: 8,
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height, // * 0.99,
               ),
+              child: const AddNewTaskScreen(),
             ),
-          );
-        },
+          ),
+        );
+      },
     );
     if (shouldRefresh == true) {
       _getNewTaskList();
-      _getNewTaskStatusCount();
+      _getTaskStatusCount();
+      _scrollToBottom();
     }
   }
 
   Future<void> _getNewTaskList() async {
-    _newTaskList.clear();
-    _getNewTasksListInProgress = true;
-    setState(() {});
+    final bool result = await _newTaskListController.getNewTaskList();
 
-    final NetworkResponse response =
-        await NetworkCaller.getRequest(url: Urls.newTaskList);
-    if (response.isSuccess) {
-      final TaskListModel taskListModel =
-          TaskListModel.fromJson(response.responseData);
-      _newTaskList = taskListModel.taskList ?? [];
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+    if (result == false) {
+      showSnackBarMessage(context, _newTaskListController.errorMessage!, true);
     }
-    _getNewTasksListInProgress = false;
-    // _scrollToBottom;
-    setState(() {});
   }
 
-  Future<void> _getNewTaskStatusCount() async {
+  Future<void> _getTaskStatusCount() async {
     _taskStatusCountList.clear();
-    _getTasksStatusCountListInProgress = true;
+    //_getTasksStatusCountListInProgress = true;
     setState(() {});
     // the api call
     final NetworkResponse response =
@@ -208,8 +210,13 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
     }
-    _getNewTasksListInProgress = false;
-    // _scrollToBottom;
+    //_scrollToBottom;
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    ScrollController();
   }
 }
