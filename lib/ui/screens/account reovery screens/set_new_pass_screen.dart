@@ -221,7 +221,7 @@ class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
       _setPasswordTEController.text,
     );
 
-    if (result) {
+    if (result == true) {
       showSnackBarMessage(
         context,
         'Password reset successful, login with your new password',
