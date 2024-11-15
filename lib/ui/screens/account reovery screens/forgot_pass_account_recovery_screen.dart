@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:task_manager_app/data/models/network_response.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
 import 'package:task_manager_app/data/utils/urls.dart';
+import 'package:task_manager_app/ui/controllers/forgot_pass_account_recovery_controller.dart';
 import 'package:task_manager_app/ui/screens/account%20reovery%20screens/forgot_pass_otp_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
@@ -19,8 +22,9 @@ class AccountRecoveryScreen extends StatefulWidget {
 }
 
 class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
-  bool _nextButtonInProgress = false;
+  // bool _nextButtonInProgress = false;
   final TextEditingController _emailTEController = TextEditingController();
+  final ForgotPassAccountRecoveryController _forgotPassAccountRecoveryController = Get.find<ForgotPassAccountRecoveryController>();
 
   @override
   Widget build(BuildContext context) {
@@ -110,18 +114,22 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: SizedBox(
         width: double.infinity,
-        child: Visibility(
-          visible: !_nextButtonInProgress,
-          replacement: const CenteredCircularProgressIndicator(),
-          child: ElevatedButton(
-            onPressed: _onTapNextButton,
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[500],
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5))),
-            child: const Icon(Icons.navigate_next_rounded),
-          ),
+        child: GetBuilder<ForgotPassAccountRecoveryController>(
+          builder: (controller) {
+            return Visibility(
+              visible: !controller.inProgress,
+              replacement: const CenteredCircularProgressIndicator(),
+              child: ElevatedButton(
+                onPressed: _onTapNextButton,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green[500],
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5))),
+                child: const Icon(Icons.navigate_next_rounded),
+              ),
+            );
+          }
         ),
       ),
     );
@@ -158,27 +166,16 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
   }
   
   Future<void> _onTapNextButton () async{
-    _nextButtonInProgress = true;
-    setState(() {});
+    final bool result = await _forgotPassAccountRecoveryController.accountRecovery(_emailTEController.text.trim());
 
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      url: Urls.recoverVerifyEmail(_emailTEController.text.trim()),
-    );
-
-    _nextButtonInProgress = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ForgotPassOtpScreen(
-            verifyEmail: _emailTEController.text.trim(),
-          ),
+    if (result) {
+      Get.to(
+        () => ForgotPassOtpScreen(
+          verifyEmail: _emailTEController.text.trim(),
         ),
       );
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      showSnackBarMessage(context, _forgotPassAccountRecoveryController.errorMessage!, true);
     }
   }
 

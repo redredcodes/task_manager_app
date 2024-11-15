@@ -22,7 +22,7 @@ class ProgressTaskListController extends GetxController{
     _inProgress = true;
     update();
 
-    final NetworkResponse response = await NetworkCaller.getRequest(url: Urls.completedTaskList);
+    final NetworkResponse response = await NetworkCaller.getRequest(url: Urls.progressTaskList);
     if (response.isSuccess) {
       final TaskListModel taskListModel = TaskListModel.fromJson(response.responseData);
       _taskList = taskListModel.taskList ?? [];

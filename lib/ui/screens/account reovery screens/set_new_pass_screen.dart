@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:task_manager_app/data/models/network_response.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
 import 'package:task_manager_app/data/utils/urls.dart';
+import 'package:task_manager_app/ui/controllers/set_new_pass_controller.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
+import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/custom_text_form_field.dart';
 import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
 import 'package:task_manager_app/ui/widgets/green_ball.dart';
@@ -21,9 +25,8 @@ class SetNewPassScreen extends StatefulWidget {
 
 class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
 
-  
-  bool _confirmButtonInProgressIndicator = false;
   final TextEditingController _setPasswordTEController = TextEditingController();
+  final SetNewPassController _setNewPassController = Get.find<SetNewPassController>();
 
   @override
   Widget build(BuildContext context) {
@@ -126,19 +129,27 @@ class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _onTapConfirmButton,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[500],
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-          child: const Text(
-            'Confirm',
-            style: TextStyle(letterSpacing: 1),
-          ),
+        child: GetBuilder<SetNewPassController>(
+          builder: (controller) {
+            return Visibility(
+              visible: !controller.inProgress,
+              replacement: const CenteredCircularProgressIndicator(),
+              child: ElevatedButton(
+                onPressed: _onTapConfirmButton,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[500],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                child: const Text(
+                  'Confirm',
+                  style: TextStyle(letterSpacing: 1),
+                ),
+              ),
+            );
+          }
         ),
       ),
     );
@@ -204,29 +215,26 @@ class _AccountRecoveryScreenState extends State<SetNewPassScreen> {
   //   });
   // }
   Future <void> _onTapConfirmButton() async {
-      _confirmButtonInProgressIndicator = true;
-      setState(() {});
-    Map<String, dynamic> requestBody = {
-       "email": widget.email,
-       "OTP": widget.otp,
-      "password": _setPasswordTEController.text
-    };
-    final NetworkResponse response = await NetworkCaller.postRequest(
-      url: Urls.recoverResetPassword,
-      body: requestBody,
+    final bool result = await _setNewPassController.confirmNewPassword(
+      widget.email,
+      widget.otp,
+      _setPasswordTEController.text,
     );
-    _confirmButtonInProgressIndicator = false;
-      setState(() {});
-    if (response.isSuccess) {
-      showSnackBarMessage(context, response.responseData['data']);
-      Navigator.pushReplacement(
+
+    if (result) {
+      showSnackBarMessage(
         context,
-        MaterialPageRoute(
-          builder: (context) => const SignInScreen(),
-        ),
+        'Password reset successful, login with your new password',
+      );
+      Get.off(
+        () => const SignInScreen(),
       );
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      showSnackBarMessage(
+        context,
+        _setNewPassController.errorMessage!,
+        true,
+      );
     }
   }
 

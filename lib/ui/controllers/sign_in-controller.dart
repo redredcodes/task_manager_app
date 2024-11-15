@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../data/models/login_model.dart';
@@ -12,10 +11,9 @@ import 'auth_controller.dart';
 // [these comments are only here for my understanding and note taking purpose, it's not done as a practice]
 class SignInController extends GetxController {
   bool _inProgress = false;
-
   bool get inProgress => _inProgress;
   String? _errorMessage;
-  String? get errorMessage =>  _errorMessage;
+  String? get errorMessage => _errorMessage;
 
 
   Future<bool> signIn(String email, String password) async {

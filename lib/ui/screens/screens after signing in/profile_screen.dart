@@ -1,13 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:task_manager_app/data/models/network_response.dart';
-import 'package:task_manager_app/data/models/user_model.dart';
-import 'package:task_manager_app/data/services/network_caller.dart';
-import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/ui/controllers/auth_controller.dart';
+import 'package:task_manager_app/ui/controllers/profile_screen_controller.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/screen_background.dart';
 import 'package:task_manager_app/ui/widgets/snack_bar_message.dart';
@@ -31,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   XFile? _selectedImage;
 
-  bool _updateProfileInProgress = false;
+  final ProfileScreenController _profileScreenController = Get.find<ProfileScreenController>();
 
   @override
   void initState() {
@@ -161,31 +157,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 // the button
-                Visibility(
-                  visible: _updateProfileInProgress == false,
-                  replacement: const CenteredCircularProgressIndicator(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _onTapNextButton,
-                        //     () {
-                        //   if (_formKey.currentState!.validate()) {
-                        //     _updateProfile;
-                        //   }
-                        // },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[500],
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
+                GetBuilder<ProfileScreenController>(
+                  builder: (controller) {
+                    return Visibility(
+                      visible: controller.inProgress == false,
+                      replacement: const CenteredCircularProgressIndicator(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _onTapNextButton,
+                            //     () {
+                            //   if (_formKey.currentState!.validate()) {
+                            //     _updateProfile;
+                            //   }
+                            // },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green[500],
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                            child: const Text('Save Updates'),
                           ),
                         ),
-                        child: const Text('Save Updates'),
                       ),
-                    ),
-                  ),
+                    );
+                  }
                 ),
 
                 const SizedBox(
@@ -248,40 +248,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
-    _updateProfileInProgress = true;
-    setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "firstName": _firstNameTEController.text.trim(),
-      "lastName": _lastNameTEController.text.trim(),
-      "mobile": _mobileTEController.text.trim(),
-    };
-
-    if (_passwordTEController.text.isNotEmpty) {
-      requestBody['password'] = _passwordTEController.text;
-    }
-
-    // encoding the image file in base64 & from base64 to String
-    if (_selectedImage != null) {
-      List<int> imageBytes = await _selectedImage!.readAsBytes();
-      String convertedImage = base64Encode(imageBytes);
-      requestBody['photo'] = convertedImage;
-    }
-
-    final NetworkResponse response = await NetworkCaller.postRequest(
-      url: Urls.updateProfile,
-      body: requestBody,
+    final bool result = await _profileScreenController.updateProfile(
+      _emailTEController.text.trim(),
+      _firstNameTEController.text.trim(),
+      _lastNameTEController.text.trim(),
+      _mobileTEController.text.trim(),
+      _passwordTEController.text,
+      _selectedImage,
     );
 
-    _updateProfileInProgress = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      UserModel userModel = UserModel.fromJson(requestBody);
-      AuthController.saveUserData(userModel);
+    if (result) {
       showSnackBarMessage(context, 'Profile has been updated');
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      showSnackBarMessage(context, _profileScreenController.errorMessage!, true);
     }
   }
 

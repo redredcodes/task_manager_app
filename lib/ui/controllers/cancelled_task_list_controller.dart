@@ -22,7 +22,7 @@ class CancelledTaskListController extends GetxController{
     _inProgress = true;
     update();
 
-    final NetworkResponse response = await NetworkCaller.getRequest(url: Urls.completedTaskList);
+    final NetworkResponse response = await NetworkCaller.getRequest(url: Urls.cancelledTaskList);
     if (response.isSuccess) {
       final TaskListModel taskListModel = TaskListModel.fromJson(response.responseData);
       _taskList = taskListModel.taskList ?? [];

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:task_manager_app/data/models/network_response.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
+import 'package:task_manager_app/ui/controllers/sign_up_controller.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/custom_text_form_field.dart';
 import 'package:task_manager_app/ui/widgets/frosted_glass.dart';
@@ -31,7 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _lastNameTEController = TextEditingController();
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
-
+  final SignUpController _signUpController = Get.find<SignUpController>();
   bool _inProgress = false;
 
   // the scroll down arrow function...
@@ -267,31 +270,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // registration post request
   Future<void> _signUp() async {
-    setState(() {
-      _inProgress = true;
-    });
-
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "firstName": _firstNameTEController.text.trim(),
-      "lastName": _lastNameTEController.text.trim(),
-      "mobile": _mobileTEController.text.trim(),
-      "password": _passwordTEController.text
-    };
-
-    NetworkResponse response = await NetworkCaller.postRequest(
-        url: Urls.registration,
-        body: requestBody
+    final bool result = await _signUpController.signUp(
+      _emailTEController.text.trim(),
+      _firstNameTEController.text.trim(),
+      _lastNameTEController.text.trim(),
+      _mobileTEController.text.trim(),
+      _passwordTEController.text,
     );
-    setState(() {
-      _inProgress = false;
-    });
-    if (response.isSuccess) {
+
+    if (result){
       _clearTextFields();
-      Navigator.pop(context);
-      showSnackBarMessage(context, 'Registration successful, Sign in please!',);
+      Get.back();
+      showSnackBarMessage(
+        context,
+        'Registration successful, Sign in please!',
+      );
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      showSnackBarMessage(
+        context,
+        _signUpController.errorMessage!,
+        true,
+      );
     }
   }
 

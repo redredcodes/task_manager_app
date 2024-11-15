@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:task_manager_app/data/models/network_response.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
 import 'package:task_manager_app/data/utils/urls.dart';
+import 'package:task_manager_app/ui/controllers/forgot_pass_otp_controller.dart';
 import 'package:task_manager_app/ui/screens/account%20reovery%20screens/set_new_pass_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_in_screen.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
@@ -23,6 +26,8 @@ class ForgotPassOtpScreen extends StatefulWidget {
 class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
   bool _verifyButtonInProgressIndicator = false;
   final TextEditingController _pinCodeTEController = TextEditingController();
+  final ForgotPassOtpController _forgotPassOtpController =
+      Get.find<ForgotPassOtpController>();
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +156,10 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
               onPressed: _onTapSignIn,
               child: Text(
                 'Sign In',
-                style: TextStyle(color: Colors.green[500], fontSize: 13),
+                style: TextStyle(
+                  color: Colors.green[500],
+                  fontSize: 13,
+                ),
               ),
             ),
           ],
@@ -162,29 +170,24 @@ class _ForgotPassOtpScreenState extends State<ForgotPassOtpScreen> {
 
   // button functionalities 👇
   Future<void> _onTapVerifyButton() async {
-    setState(() {
-      _verifyButtonInProgressIndicator = true;
-    });
-
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      url: Urls.recoverVerifyOtp(widget.verifyEmail, _pinCodeTEController.text),
+    final bool result = await _forgotPassOtpController.verifyOtp(
+      widget.verifyEmail,
+      _pinCodeTEController.text,
     );
-    setState(() {
-      _verifyButtonInProgressIndicator = false;
-    });
 
-    if (response.isSuccess) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SetNewPassScreen(
-            email: widget.verifyEmail,
-            otp: _pinCodeTEController.text,
-          ),
+    if (result) {
+      Get.to(
+        () => SetNewPassScreen(
+          email: widget.verifyEmail,
+          otp: _pinCodeTEController.text,
         ),
       );
     } else {
-      showSnackBarMessage(context, response.errorMessage, true);
+      showSnackBarMessage(
+        context,
+        _forgotPassOtpController.errorMessage!,
+        true,
+      );
     }
   }
 
